@@ -48,7 +48,7 @@ private:
     
     void cargarColum(nodo *temp, int fila, int columna){
         
-        for (int i=0, j = 0; i < dimension; i++)
+        for (int i=0; i < dimension; i++)
         {
             if(fila != i){
                 temp->vecinos_columna[tablero[i][columna].data] = &tablero[i][columna];
@@ -109,39 +109,30 @@ private:
         }else
         {
             int color = colores[indColor]; // guardamos el color que vamos a examinar su posible utilizacion para este nodo
-            int bandFila = 0,bandColum = 0,bandZona = 0; // iniciamos nuestas banderas
+            int bandera = 0,bandera2 = 0; // iniciamos nuesta bandera
             if (aColorear.borde == true ) // verificamos si es un borde 
             {
-                bandZona = dimension-1;// Colocamos el numero maximo que pueden tomar las banderas asi es igual a las otras banderas en caso que sea posible su utilizacion de esye color  
+                bandera2 = dimension-1;// Colocamos el numero maximo que pueden tomar las banderas asi es igual a las otras banderas en caso que sea posible su utilizacion de esye color  
             }else
             {
                 if (aColorear.vecinos_zona[0]->data != color) // examinamos el color con el nodo vecino de la zona, si es igual ya no es posible utilizar este color
                 { // solo sirve para 4x4
-                    bandZona = dimension-1; // mejorar poque no funciona para cuando la zona tiene mas de un elemento 
+                    bandera2 = dimension-1; // mejorar poque no funciona para cuando la zona tiene mas de un elemento 
                 }else
-                    bandZona = -1;
+                    bandera2 = -1;
             }
-
-            if (bandZona != -1) // si el -1 bandera de la zona significa que el color no coincide con nungun valor de la zona entonces verificamos con los otros vecinos
+            
+            if (bandera2 != -1) // si el -1 bandera de la zona significa que el color no coincide con nungun valor de la zona entonces verificamos con los otros vecinos
             {
-
-                if (aColorear.vecinos_fila[color]->data != color) // verificamos que el color no se encuentre entre los vacinos de la fila
+                
+                if (aColorear.vecinos_fila.find(color) == aColorear.vecinos_fila.end() && aColorear.vecinos_columna.find(color) == aColorear.vecinos_columna.end()) //verificar si da NULL si el color no se encuentra en el vector da Error porque entra en una posicion que no existe
                 {
-                    bandFila = 3; //si bandera es igual a dimension-1 entonces el color no se encuentra entre las dimension
+                    bandera = dimension -1; 
                 }
-                else
-                {
-                    bandFila = 2; // en el caso de que el color se encuentre entre los vecinos rompemos la iteracion y salimos del for
-                }
-
-                // if (aColorear.vecinos_columna[*color]->data != color && bandFila == 2) // realizamos lo mismo pero con los vecinos de las cvolumnas
-                // {
-                //     bandColum = 3; // si bandera es igual a columna -1 significa que no coincide
-                // }
                 //agregar otro if aca para el vecinos zona si es distinto a 4x4
             }
             // vemos si el color se puede utilizar
-            if (bandFila == dimension - 1 && bandColum == dimension - 1 && bandZona == dimension - 1)
+            if (bandera == dimension - 1 && bandera2 == dimension - 1 )
             {
                 return color; //si es asi retornamos el color, que se guarda en el dato del nodo
             }
@@ -153,7 +144,7 @@ private:
         } 
     }
 public:
-    Sudoku(vector<vector<int>> );
+    Sudoku(int [][dimension] );
     void cargarDatos(){
         for (int i = 0; i < dimension; i++)
         {
@@ -199,7 +190,7 @@ public:
     ~Sudoku();
 };
 // constructor de la clase con parametro Matriz inicial
-Sudoku::Sudoku(vector<vector<int>> Matriz_Tablero)
+Sudoku::Sudoku(int Matriz_Tablero[][dimension])
 {
     cargarColores(); // calculamos las colores posibles para nuestro juego
     tablero.resize(dimension); // redimensionamos nuestro array
@@ -212,8 +203,7 @@ Sudoku::Sudoku(vector<vector<int>> Matriz_Tablero)
         {
             tablero[i][j].data = Matriz_Tablero[i][j];
             
-        } 
-        cout<<endl;
+        }
     }
     
     cout<<endl<<"Tablero Orgininal (cero representa celdas vacias)"<<endl;
@@ -227,12 +217,16 @@ Sudoku::~Sudoku(){
 int main(){
     
     /*creamos nuestra matriz multidimensional */
-    vector<vector<int>> Matriz_Tablero;           // creamos la matriz de enteros
-    Matriz_Tablero.resize(dimension); // redimensionamos nuestro array
-    for (int i = 0; i < dimension; ++i)
-        Matriz_Tablero[i].resize(dimension); // cada fila redimensinamos con el valor de las dimension
+    // vector<vector<int>> Matriz_Tablero;           // creamos la matriz de enteros
+    // Matriz_Tablero.resize(dimension); // redimensionamos nuestro array
+    // for (int i = 0; i < dimension; ++i)
+    //     Matriz_Tablero[i].resize(dimension); // cada fila redimensinamos con el valor de las dimension
 
-    Matriz_Tablero = file("puntos.txt"); // abrimos el archivo y lo guardamos en Matriz
+    //Matriz_Tablero = file("puntos.txt"); // abrimos el archivo y lo guardamos en Matriz
+    int Matriz_Tablero[][dimension] = { 0, 2, 3, 0,
+                                        1, 0, 0, 4,
+                                        3, 0, 0, 2,
+                                        0, 4, 1, 0};
     Sudoku juego(Matriz_Tablero); // Iniciamos nuestro objeto juego
     juego.cargarDatos(); // cargamos los datos iniciales para comenzar el juego
     juego.resolver();// Resolvemos el juego
@@ -240,6 +234,7 @@ int main(){
 return 0;
 }
 //Abre un archivo y retorna una matriz
+/* 
 vector<vector<int>> file(const char* name_file){
     
     ifstream fs;
@@ -287,14 +282,9 @@ vector<vector<int>> file(const char* name_file){
     return Matriz_Tablero;
     
 }
-
-/* 
--Cargar zona cambiar para 9*9
--Cambiar los vectores de los vecinos por HashTable, para una busqueda cte
--tratar de implementar backt. para dimensiones mas altas
 */
 
+// -Cargar zona cambiar para 9*9
+// -Cambiar los  3 vectores de los vecinos por un solo HashTable, para una busqueda cte
+// -tratar de implementar backt. para dimensiones mas altas
 
-/* Mensaje
-    Profe.. Me podrias enviar mi codigo pero corregido obviamente con los errores cometidos, porque creo que me falta liberar memoria y Null algunos punteros que no se muy bien donde poner
- */
