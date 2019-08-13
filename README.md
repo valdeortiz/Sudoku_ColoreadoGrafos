@@ -4,11 +4,13 @@ Progrmado en Linux Lite deribado de Ubuntu.
 
 - Compilado con : g++ sudoku.cpp -o sudoku
 
--Partes del codigo:
+##Partes del codigo:
 1- Lectura del archivo con la matriz inicial del sudoku.(puntos.txt)
 2- Crea un objeto guardando los datos del archivo.
 3- Resuelve el sudoku con coloreado de grafos.
 4- Imprime la matriz original(del archivo) y la matriz resuelta.
 
--OBS: Hasta la fecha 23/07/2019 funciona para 4x4. Falta implementar para que se vuelva de nxn. 
+##OBS: 
+- Funciona para 4x4. Falta implementar para que se vuelva de nxn.
+- La Rama HashTab esta la  implementacion con HastTable.
 
